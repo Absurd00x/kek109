@@ -1,0 +1,80 @@
+template <typename T>
+struct Node {
+    T val;
+    Node *next, *prev;
+    Node() {}
+    Node(T val_, Node *next_, Node *prev_)
+        : val(val_)
+        , next(next_)
+        , prev(prev_) {}
+};
+
+template <typename T>
+class LinkedList {
+    Node *head;
+
+public:
+    LinkedList() {
+        head = new Node();
+        head->next = head;
+        head->prev = head;
+    }
+    void insert_after(const T &val, Node *node) {
+        Node *next = node->next;
+        Node *prev = node;
+        Node *created = new Node(val, next, prev);
+        next->prev = created;
+        prev->next = created;
+    }
+    void push_back(const T &val) {
+        insert_after(val, head->prev);
+    }
+    Node* get_by_value(const T &val) const {
+        Node *cur = head->next;
+        while (cur != head && cur->val != val) {
+            cur = cur->next;
+        }
+        if (cur == head) {
+            return nullptr;
+        } else {
+            return cur;
+        }
+    }
+    void erase_node(Node *node) {
+        if (node == nullptr || node == head) {
+            throw std::runtime_error("Cannot erase this node");
+        }
+        Node *next = node->next;
+        Node *prev = node->prev;
+        delete node;
+        next->prev = prev;
+        prev->next = next;
+    }
+    void erase_all(const T &val) {
+        Node *cur = head->next;
+        while (cur != head) {
+            Node *next = cur->next;
+            if (cur->val == val) {
+                erase_node(cur);
+            }
+            cur = next;
+        }
+    }
+    ~LinkedList() {
+        Node *cur = head->next;
+        while (cur != next) {
+            Node *next = cur->next;
+            erase_node(cur);
+            cur = next;
+        }
+        delete head;
+    }
+    /*
+    ~LinkedList() {
+        while (head->next != head) {
+            erase_node(head->next);
+        }
+        delete head;
+    }
+    */
+};
